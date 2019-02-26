@@ -53,7 +53,7 @@ function insert(target, startIndex = 1) {
     return startIndex >= arr.length ? arr : insert(arr, startIndex)
 }
 
-// 插入
+// 插入 - 循环实现
 function insert_for(target) {
     for (let i = 1; i < target.length; i++) {
         const insertValue = target.splice(i, 1)[0];
@@ -69,7 +69,99 @@ function insert_for(target) {
     return target;
 }
 
+// 希尔排序 - 经典模式
 
-const test = require('./index');
+function shell(arr) {
+    const interval = [
+        Math.ceil(arr.length / 2),
+        2,
+        1,
+    ];
+    for (let i = 0; i < interval.length; i++) {
+        const currentInterval = interval[i];
+        for (let j = currentInterval; j < arr.length; j++) {
+            const current = arr[j];
+            for (let k = j - currentInterval; k >= 0; k -= currentInterval) {
+                if (current > arr[k]) {
+                    break;
+                }
+                arr[j] = arr[k];
+                arr[k] = current;
+            }
+        }
+    }
+    return arr;
+}
 
-test(insert_for);
+// 希尔排序 - 动态间隔
+function shell_dynamic(arr) {
+    let o = 0;
+    const length = arr.length;
+    for (let i = Math.floor(length / 2); i > 0; i = Math.floor(i / 2)) {
+        const currentInterval = i;
+        for (let j = currentInterval; j < length; j++) {
+            const current = arr[j];
+            for (let k = j - currentInterval; k >= 0; k -= currentInterval) {
+                const target = arr[k];
+                if (current >= target) {
+                    break;
+                }
+                arr[k] = current;
+                arr[j] = target;
+                o++;
+            }
+        }
+    }
+    console.log('长度：', length, '运行次数', o)
+    return arr;
+}
+
+'12345678  1234 12 43'
+[8, 4, 2, 1]
+
+// 归并排序
+function merge(arr) {
+    const length = arr.length;
+    const currentStart = 0;
+    const currentLength = 0;
+    const record = [];
+
+    const interval = 2;
+    for (let i = length / 2; i >= 1; i = Math.floor(i / 2)) {
+        for (let j = 0; j < arr.length - interval; j += interval) {
+            let prevIndex = j;
+            let nextIndex = j + interval / 2 - 1;
+            const currentNewArr = [];
+            for (let k = 0; k < interval; k++) {
+                if (currentNewArr.length >= interval) return;
+                if (arr[prevIndex] > arr[nextIndex]) {
+                    currentNewArr.push(arr[nextIndex]);
+                    nextIndex++;
+                }
+                currentNewArr.push(arr[prevIndex]);
+                prevIndex++;
+
+                if (prevIndex === j + interval / 2 - 1) {
+
+                }
+            }
+        }
+    }
+}
+
+// 11 
+// 2 2 2 2 3  //5
+//   4   7// 2
+//   11 // 1
+
+
+
+// 23 11   
+// 11 5
+// 5  2
+// 2  1
+// 1  over
+
+
+
+module.exports = shell_dynamic;
