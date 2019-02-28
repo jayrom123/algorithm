@@ -25,15 +25,17 @@ function isSortArr(arr, isUp = true) {
     };
 }
 
-function createRadomNumbers(number = 100, maxNumber = 1000) {
+function createRadomNumbers(number = parseInt(Math.random() * 1000), maxNumber = 100) {
     const createRadomNumber = () => (Math.random() * maxNumber).toFixed(2);
     return Array(number).fill().map(createRadomNumber);
 }
 
 function test(sortFunc) {
     let testDataFromCustomer = Object.values(datas);
-    const allData = [...testDataFromCustomer, createRadomNumbers(100000, 10000)];
+    const randoms = Array(parseInt(Math.random() * 100)).fill().map(() => createRadomNumbers())
+    const allData = [...testDataFromCustomer, ...randoms];
     const isAllPass = true;
+
     allData.forEach((current, i) => {
         const result = sortFunc(current);
         const varySortDirection = isSortArr(result);
@@ -46,7 +48,7 @@ function test(sortFunc) {
     })
 
     if (isAllPass) {
-        console.log('all data pass');
+        console.log('all data pass', allData.length);
     }
 }
 

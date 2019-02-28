@@ -1,4 +1,10 @@
 
+// test log
+function log(obj, ...reset) {
+    console.log(JSON.stringify(obj), ...reset)
+}
+
+
 // 冒泡排序
 function bubble(target) {
     let arr = [...target];
@@ -122,46 +128,187 @@ function shell_dynamic(arr) {
 // 归并排序
 function merge(arr) {
     const length = arr.length;
-    const currentStart = 0;
-    const currentLength = 0;
-    const record = [];
 
-    const interval = 2;
-    for (let i = length / 2; i >= 1; i = Math.floor(i / 2)) {
-        for (let j = 0; j < arr.length - interval; j += interval) {
+    // 单个区域已排序长度
+    let interval = 2;
+    for (let i = length; i > 1; i = Math.ceil(i / 2)) {
+
+        for (let j = 0; j < arr.length; j += interval) {
             let prevIndex = j;
-            let nextIndex = j + interval / 2 - 1;
+            let nextIndex = j + interval / 2;
             const currentNewArr = [];
+            const min = Math.min(j + interval, arr.length);
+            const pervMin = Math.min(min, j + interval / 2)
+            const currentLength = min - j;
+
             for (let k = 0; k < interval; k++) {
-                if (currentNewArr.length >= interval) return;
-                if (arr[prevIndex] > arr[nextIndex]) {
+                if (currentNewArr.length >= currentLength) break;
+
+                const isAddNext = prevIndex >= pervMin || (nextIndex < min && arr[prevIndex] > arr[nextIndex])
+
+                if (isAddNext) {
                     currentNewArr.push(arr[nextIndex]);
                     nextIndex++;
-                }
-                currentNewArr.push(arr[prevIndex]);
-                prevIndex++;
-
-                if (prevIndex === j + interval / 2 - 1) {
-
+                } else {
+                    currentNewArr.push(arr[prevIndex]);
+                    prevIndex++;
                 }
             }
+
+            arr.splice(j, currentLength, ...currentNewArr)
         }
+
+        interval *= 2;
     }
+
+    return arr;
 }
 
-// 11 
-// 2 2 2 2 3  //5
-//   4   7// 2
-//   11 // 1
+// 合并排序
+function merge_recursion(arr) {
+    function recursion(start, length) {
+        if (length === 1) return [arr[start]];
 
+        const prevLength = Math.floor(length / 2);
+        const nextLength = length - prevLength;
 
+        const prev = recursion(start, prevLength)
+        const next = recursion(start + prevLength, nextLength)
+        const newArr = [];
 
-// 23 11   
-// 11 5
-// 5  2
-// 2  1
-// 1  over
+        for (let i = 0; i < length; i++) {
+            if (prev[0] === undefined || next[0] === undefined) {
+                newArr.push(...prev, ...next);
+                break;
+            }
+            newArr.push(prev[0] < next[0] ? prev.splice(0, 1)[0] : next.splice(0, 1)[0]);
+        }
 
+        return newArr;
+    }
+    return recursion(0, arr.length)
+}
 
+// 快速排序
+function quilck(arr) {
+    const length = arr.length;
+    const base = arr[0];
+    const left = [];
+    const right = [];
 
-module.exports = shell_dynamic;
+    if (length === 0) return [];
+    if (length === 1) return right;
+
+    for (let i = 1; i < length; i++) {
+        if (arr[i] > base) {
+            right.push(arr[i])
+        } else {
+            left.push(arr[i])
+        }
+    }
+
+    return [...quilck(left), base, ...quilck(right)]
+}
+
+function heapSort(arr) {
+    const sortedArr = [];
+    let siglePointDemo = {
+        value: 0,
+        children: [
+            {
+                value: 0,
+                children: [],
+                parent: {}
+            },
+            {
+                value: 0,
+            }
+        ]
+    }
+
+    function createPoint(value, parent = null) {
+        return {
+            parent,
+            value,
+            sorted: false,
+            children: []
+        }
+    }
+
+    function creatHeap(arr) {
+        const heap = createPoint(arr.shift());
+        const actionStack = [heap];
+        let stackIndex = 0;
+
+        function recursion(heap) {
+            if (arr.length === 0) return;
+            const spliceLength = arr.length === 1 ? 1 : 2;
+            const firstTwo = arr.splice(0, spliceLength);
+
+            firstTwo.forEach((current) => {
+                const point = createPoint(current, heap);
+                heap.children.push(point);
+                actionStack.push(point);
+            })
+            const nextPoint = actionStack[stackIndex];
+            stackIndex++;
+            recursion(nextPoint);
+        }
+        recursion(heap);
+
+        return actionStack;
+    }
+
+    function getMaxChildren(children) {
+        let maxChildren = null;
+
+        for (let i = children.length - 1; i >= 0; i--) {
+            const current = children[i];
+
+            if (current.sorted) continue;
+
+            if (!maxChildren || current.value > maxChildren.value) {
+                maxChildren = current;
+            }
+        }
+
+        return maxChildren;
+    }
+
+    function sinkSmaller(target) {
+        const maxChildren = getMaxChildren(target.children);
+        if (maxChildren && maxChildren.value > target.value) {
+            const temp = target.value;
+            target.value = maxChildren.value;
+            maxChildren.value = temp;
+            sinkSmaller(maxChildren);
+        }
+    }
+
+    const actionStack = creatHeap(arr);
+
+    // 将初始堆排序
+    for (let i = actionStack.length - 1; i >= 0; i--) {
+        const currentPoint = actionStack[i];
+        sinkSmaller(currentPoint);
+    }
+
+    // 将半成品堆排序 => 标准排序
+    for (let i = actionStack.length - 1; i >= 0; i--) {
+        const lastPoint = actionStack[i];
+        const firstPoint = actionStack[0];
+
+        const temp = firstPoint.value;
+        firstPoint.value = lastPoint.value;
+        lastPoint.value = temp;
+
+        lastPoint.sorted = true;
+        sortedArr.unshift(lastPoint.value);
+
+        sinkSmaller(firstPoint);
+    }
+
+    return sortedArr;
+}
+
+module.exports = heapSort

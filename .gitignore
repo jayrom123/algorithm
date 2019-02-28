@@ -1,0 +1,22 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# modules
+/node_modules
+
+# production
+/build
+
+# temp file
+.happypack/
+
+# editor config
+*.idea
+.idea
+.vscode
+.DS_Store
+*.DS_Store
+
+# log
+*.seed
+*.log
+*.gz
