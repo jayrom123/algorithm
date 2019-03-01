@@ -34,7 +34,7 @@ function test(sortFunc) {
     let testDataFromCustomer = Object.values(datas);
     const randoms = Array(parseInt(Math.random() * 100)).fill().map(() => createRadomNumbers())
     const allData = [...testDataFromCustomer, ...randoms];
-    const isAllPass = true;
+    let isAllPass = true;
 
     allData.forEach((current, i) => {
         const result = sortFunc(current);

@@ -311,4 +311,69 @@ function heapSort(arr) {
     return sortedArr;
 }
 
-module.exports = heapSort
+
+// 计数排序 - 针对有输入范围的整数排序
+function count(arr) {
+    const repeatedCount = [];
+    const result = [];
+
+    for (let i in arr) {
+        const current = arr[i];
+        const content = repeatedCount[current] || 0;
+        repeatedCount[current] = content + 1;
+    }
+    for (let index in repeatedCount) {
+        const count = repeatedCount[index];
+        if (count > 0) {
+            for (let j = 0; j < count; j++) {
+                result.push(index)
+            }
+        }
+    }
+    return result;
+}
+
+
+// 桶排序 - 计数排序升级版
+function bucketSort(arr) {
+    const bucket = [];
+
+    function insert(arr = [], number) {
+        if (!arr || arr.legnth === 0) return [number];
+        for (let i in arr) {
+            const current = arr[i];
+            if (current >= number) {
+                arr.splice(i, 0, number);
+                return arr;
+            }
+        }
+        arr.push(number);
+        return arr;
+    }
+
+    for (let i in arr) {
+        const current = arr[i];
+        const firstNumber = parseFloat(String(current).slice(0, 1));
+        bucket[firstNumber] = insert(bucket[firstNumber], current);
+    }
+
+    function mergeBucket(bucket, result = []) {
+        let minSeries = null;
+
+        for (let i in bucket) {
+            const series = bucket[i];
+            if (series && series.length > 0) {
+                minSeries = minSeries === null || series[0] < minSeries[0] ? series : minSeries;
+            }
+        }
+
+        if (minSeries === null) return result;
+
+        result.push(minSeries.shift())
+        return mergeBucket(bucket, result)
+    }
+
+    return mergeBucket(bucket);
+}
+
+module.exports = bucketSort
