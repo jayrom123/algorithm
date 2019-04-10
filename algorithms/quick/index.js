@@ -1,6 +1,6 @@
 
 // 快速排序
-function quilck(arr) {
+function quick(arr) {
     const length = arr.length;
     const base = arr[0];
     const left = [];
@@ -20,4 +20,4 @@ function quilck(arr) {
     return [...quilck(left), base, ...quilck(right)]
 }
 
-module.exports= quilck;
+module.exports= quick;
